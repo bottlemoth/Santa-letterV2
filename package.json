@@ -1,0 +1,34 @@
+{
+  "name": "santa-letter",
+  "version": "1.0.0",
+  "description": "Santa Letter — wspólne listy prezentowe dla rodziny i znajomych z ochroną niespodzianki",
+  "private": true,
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node-pg-migrate up -m migrations --no-check-order",
+    "migrate:down": "node-pg-migrate down -m migrations",
+    "seed": "node src/scripts/seed.js",
+    "test": "node src/scripts/prepare-test-db.js && node --test --test-concurrency=1 \"tests/**/*.test.js\""
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "connect-pg-simple": "^10.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^5.1.0",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "helmet": "^8.0.0",
+    "multer": "^2.0.0",
+    "node-pg-migrate": "^9.0.0",
+    "pg": "^8.13.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "supertest": "^7.0.0"
+  }
+}

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Santa Letter — wspólne listy prezentowe dla rodziny i znajomych. Zaklepuj prezenty bez psucia niespodzianki.">
+  <meta name="theme-color" content="#1f3d2b">
+  <title>Santa Letter — listy prezentowe z niespodzianką</title>
+  <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/css/styles.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Przejdź do treści</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#/" aria-label="Santa Letter — strona główna">
+        <img src="/img/logo.svg" alt="" width="36" height="36">
+        <span>Santa Letter</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" hidden>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="visually-hidden">Menu</span>
+      </button>
+      <nav id="site-nav" class="site-nav" aria-label="Główna nawigacja"></nav>
+    </div>
+  </header>
+
+  <main id="main" class="container" tabindex="-1">
+    <noscript><p class="alert alert-error">Santa Letter wymaga włączonej obsługi JavaScriptu.</p></noscript>
+    <p class="loading" role="status">Ładowanie…</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Santa Letter · Prezenty z sercem, niespodzianki bez spoilerów.</p>
+    </div>
+  </footer>
+
+  <div class="toasts" role="status" aria-live="polite" aria-atomic="false"></div>
+</body>
+</html>
