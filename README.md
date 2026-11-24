@@ -13,7 +13,7 @@ Tryb **„Niespodzianka”** idzie dalej: właściciel listy podaje tylko wskaz�
 3. [Szybki start (Docker Compose)](#szybki-start-docker-compose)
 4. [Konfiguracja `.env`](#konfiguracja-env)
 5. [Polecenia Docker Compose](#polecenia-docker-compose)
-6. [Uruchomienie bez Dockera](#uruchomienie-bez-dockera)
+6. [Wdrożenie na serwer (VPS)](#wdrożenie-na-serwer-vps) · [Uruchomienie bez Dockera](#uruchomienie-bez-dockera)
 7. [Konta demonstracyjne](#konta-demonstracyjne)
 8. [Testy](#testy)
 9. [Struktura projektu](#struktura-projektu)
@@ -106,6 +106,28 @@ W Compose aplikacja łączy się z bazą przez nazwę usługi: `postgres://…@d
 **Trwałość danych:** baza danych żyje w named volume `pgdata`, a zdjęcia w volume `uploads`. `restart`, `stop`, `down` i `up --build` ich nie usuwają. Usuwa je dopiero `down -v`.
 
 Testy w kontenerze używają osobnej bazy `<POSTGRES_DB>_test`. Skrypt `prepare-test-db.js` tworzy ją, jeśli nie istnieje, uruchamia na niej migracje i odmawia pracy na bazie, której nazwa nie zawiera „test”.
+
+## Wdrożenie na serwer (VPS)
+
+Produkcja to `compose.yaml` z nakładką `compose.prod.yaml`, która:
+- dodaje **Caddy** z automatycznym HTTPS (Let's Encrypt) i przekierowaniem HTTP→HTTPS,
+- **zamyka porty** aplikacji i bazy na hoście (`ports: !reset []`, wymaga Compose ≥ 2.24). Publiczne są tylko 80 i 443,
+- wymusza `NODE_ENV=production`, `COOKIE_SECURE=true` i `TRUST_PROXY=1` niezależnie od `.env`,
+- ogranicza rozmiar logów (3 × 10 MB na kontener).
+
+Wymagania: domena z rekordem **A** wskazującym na IP serwera oraz otwarte porty 80 i 443.
+
+```bash
+git clone <repo> && cd <repo>
+cp .env.example .env
+nano .env          # nowe SESSION_SECRET i POSTGRES_PASSWORD (tylko litery i cyfry), DOMAIN=twoja.domena.pl
+docker compose -f compose.yaml -f compose.prod.yaml up -d --build
+docker compose -f compose.yaml -f compose.prod.yaml ps      # app/db bez portów, caddy na 80/443
+```
+
+Aktualizacja: `git pull`, a potem ponownie `docker compose -f compose.yaml -f compose.prod.yaml up -d --build`.
+
+> Na produkcji **nie** uruchamiaj `npm run seed` (konta demo mają znane hasło) i **nigdy** `docker compose down -v` (usuwa bazę i zdjęcia).
 
 ## Uruchomienie bez Dockera
 

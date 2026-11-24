@@ -1,0 +1,17 @@
+# Caddy automatycznie pobiera i odnawia certyfikat HTTPS dla domeny z $DOMAIN
+# oraz przekierowuje HTTP -> HTTPS.
+{$DOMAIN} {
+	encode zstd gzip
+
+	# Limit nieco powyżej MAX_UPLOAD_BYTES (5 MB) — resztę odrzuci sama aplikacja.
+	request_body {
+		max_size 6MB
+	}
+
+	reverse_proxy app:3000
+
+	log {
+		output stdout
+		format console
+	}
+}

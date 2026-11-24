@@ -1,0 +1,55 @@
+# Nakładka produkcyjna. Użycie:
+#   docker compose -f compose.yaml -f compose.prod.yaml up -d --build
+#
+# Zmiany względem compose.yaml:
+#  - Caddy jako reverse proxy z automatycznym HTTPS (Let's Encrypt),
+#  - aplikacja i baza BEZ portów na hoście (dostęp tylko przez sieć wewnętrzną),
+#  - bezpieczne ciasteczka + zaufanie do proxy,
+#  - limity rozmiaru logów.
+# Wymaga Docker Compose >= 2.24 (składnia !reset).
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  app:
+    # Usuwa port 3000 odziedziczony z compose.yaml — Caddy łączy się po nazwie "app".
+    ports: !reset []
+    # Na stałe (nie z .env): za Caddy ruch zawsze idzie przez HTTPS przez dokładnie jedno proxy.
+    environment:
+      NODE_ENV: production
+      COOKIE_SECURE: "true"
+      TRUST_PROXY: "1"
+    logging: *logging
+
+  db:
+    # Baza niedostępna z hosta ani z internetu.
+    ports: !reset []
+    logging: *logging
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      DOMAIN: ${DOMAIN:?Ustaw DOMAIN w .env (np. santa.twojadomena.pl)}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data        # certyfikaty — muszą przetrwać restart
+      - caddy_config:/config
+    networks:
+      - backend
+    logging: *logging
+
+volumes:
+  caddy_data:
+  caddy_config:
